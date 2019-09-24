@@ -103,8 +103,18 @@
   \egroup%
 }
 
+
 % print field on a separate line
 \newcommand\pedfukthesis@printfieldblock[1]{\noindent\pedfukthesis@printfield{#1}\par}
+
+% environment for simpler retrivment of the fields
+\newenvironment{usefields}{
+  \makeatletter%
+  % shortcuts
+  \let\@\pedfukthesis@printfieldblock%
+  \let\@@\pedfukthesis@printfield%
+  \let\@s\pedfukthesis@getstring%
+}{\makeatother}
 
 % #1 field name
 % #2 commands executed at the beginning
@@ -115,6 +125,12 @@
   \csgdef{pedfukthesis@finish@#1}{#3}%
 }
 
+% environment for easier setting of the field formats
+\newenvironment{setfieldformats}{
+  \makeatletter%
+  \let\@\PedfDeclareFieldFormat%
+}{\makeatother}
+
 % declare and retrieve strings
 \newcommand\pedfukthesis@setstring[2]{\csgdef{pedfukthesis@string@#1}{#2}}
 \newcommand\pedfukthesis@getstring[1]{\csuse{pedfukthesis@string@#1}}
@@ -122,7 +138,6 @@
 \newcommand\PedfSetString[2]{\pedfukthesis@setstring{#1}{#2}}
 
 % Declare thesis type
-
 % It is necessary to define two forms of the text
 % One for the title page, second for the declaration
 
@@ -163,41 +178,43 @@
 \newcommand\TitlePage[1][]{%
   \clearpage%
   \thispagestyle{empty}%
-  \bgroup%
-  \pedfukthesis@printfieldblock{university}%
-  \pedfukthesis@printfieldblock{faculty}%
-  \pedfukthesis@printfieldblock{department}%
-  \pedfukthesis@printfieldblock{type}%
-  \pedfukthesis@printfieldblock{title}% title in the original langauge or in Czech, if the original is English
-  \pedfukthesis@printfieldblock{titletrans}% English translation
+  \begin{usefields}% the usefields environment defines \@, \@@ and \@s as shortcuts to access property fields and strings
+  \@{university}%
+  \@{faculty}%
+  \@{department}%
+  \@{type}%
+  \@{title}% title in the original langauge or in Czech, if the original is English
+  \@{titletrans}% English translation
   \ifx\relax#1\relax\else%
     \def\pedfukthesis@titleczech{#1}%
-    \pedfukthesis@printfieldblock{titleczech}%
+    \@@{titleczech}%
   \fi%
-  \pedfukthesis@printfieldblock{author}%%
+  \@{author}%%
   \vfill%
   \noindent\begin{tabular}{@{}p{0.3\textwidth}p{0.7\textwidth}}%
-    \pedfukthesis@string@supervisor:~& \pedfukthesis@printfield{supervisor}\\%
-    \pedfukthesis@string@programme:~& \pedfukthesis@printfield{programme}\\%
-    \pedfukthesis@string@field:~& \pedfukthesis@printfield{field}%
+    \@s{supervisor}:~& \@@{supervisor}\\%
+    \@s{programme}:~& \@@{programme}\\%
+    \@s{field}:~& \@@{field}%
   \end{tabular}%
   \vfill%
-  \pedfukthesis@printfieldblock{year}%
-  \egroup%
+  \@{year}%
+  \end{usefields}%
   \cleardoublepage%
 }
 
 % Default formatting
 
 % \centering needs \par in the current group to take effect
-\PedfDeclareFieldFormat{university}{\centering\large}{\par}
-\PedfDeclareFieldFormat{faculty}{\centering\large}{\par\bigskip}
-\PedfDeclareFieldFormat{department}{\centering}{\par\vfill}
-\PedfDeclareFieldFormat{type}{\centering\large}{\par\vfill}
-\PedfDeclareFieldFormat{title}{\centering\large}{\par}
-\PedfDeclareFieldFormat{titletrans}{\centering\large}{\par}
-\PedfDeclareFieldFormat{titleczech}{\centering\large}{\par}
-\PedfDeclareFieldFormat{author}{\centering}{\par}
-\PedfDeclareFieldFormat{keywords}{}{}
+\begin{setfieldformats}% \@ shortcut is used to declare field format in the setfieldformats environment
+\@{university}{\centering\large}{\par}
+\@{faculty}{\centering\large}{\par\bigskip}
+\@{department}{\centering}{\par\vfill}
+\@{type}{\centering\large}{\par\vfill}
+\@{title}{\centering\large}{\par}
+\@{titletrans}{\centering\large}{\par}
+\@{titleczech}{\centering\large}{\par}
+\@{author}{\par\bigskip\centering}{\par}
+\@{keywords}{}{}
+\end{setfieldformats}
 
 \endinput
