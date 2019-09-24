@@ -169,9 +169,9 @@
 
 \fi
 
-\pedfukthesis@setstring{supervisor}{Vedoucí práce}
-\def\pedfukthesis@string@programme{Studijní program}
-\def\pedfukthesis@string@field{Studijní obor}
+\PedfSetString{supervisor}{Vedoucí práce}
+\PedfSetString{programme}{Studijní program}
+\PedfSetString{field}{Studijní obor}
 
 % the optional argument should contain Czech title if the title is in another language
 % titletrans should be always English
@@ -202,6 +202,28 @@
   \cleardoublepage%
 }
 
+\PedfSetString{originality}{Odevzdáním této diplomové práce na téma 
+\pedfukthesis@printfield{statementtitle}\space
+potvrzuji, že jsem ji \pedfukthesis@string@workedout\ pod vedením vedoucího práce samostatně za
+použití v práci uvedených pramenů a literatury. Dále potvrzuji, že tato práce
+nebyla využita k získání jiného nebo stejného titulu.}
+
+\PedfSetString{workedout}{odevzdal}
+
+% the parameter should contain date and place of thesis completion
+\newcommand\OriginalityStatement[1]{%
+  % make new fields in order to support their formatting
+  \let\pedfukthesis@statementtitle\pedfukthesis@title%
+  \let\pedfukthesis@originalitystatement\pedfukthesis@string@originality%
+  \def\pedfukthesis@originalityplace{#1}%
+  \clearpage%
+  \begin{usefields}%
+  \@{originalitystatement}%
+  \@{originalityplace}%
+  \end{usefields}%
+  \cleardoublepage%
+}
+
 % Default formatting
 
 % \centering needs \par in the current group to take effect
@@ -214,6 +236,8 @@
 \@{titletrans}{\centering\large}{\par}
 \@{titleczech}{\centering\large}{\par}
 \@{author}{\par\bigskip\centering}{\par}
+\@{statementtitle}{\itshape}{}
+\@{originalitystatement}{\null\vfill\noindent}{\par\vskip\baselineskip}
 \@{keywords}{}{}
 \end{setfieldformats}
 
