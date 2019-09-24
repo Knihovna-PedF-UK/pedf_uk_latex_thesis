@@ -1,0 +1,32 @@
+\documentclass[oneside]{book}
+\usepackage{iftex}
+% use fontenc and inputenc only with pdflatex
+\ifPDFTeX
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\fi
+
+\usepackage[czech]{babel}
+
+\usepackage[%
+  author={Michal Hoftich},
+  title={Ukázkový dokument},
+  titletrans={Sample document},
+  keywords={test,validation},
+  supervisor={PhDr. Jiří Vomáčka, Ph.D.},
+  department={Katedra pedagogiky},
+  programme={Specializace v pedagogice},
+  subject={Testovací dokument pro účely validace},
+  field={Biologie, geologie a environmentalistika se zaměřením na vzdělávání – Pedagogika}
+]{../pedfukthesis}
+
+\usepackage{lipsum}
+\begin{document}
+\frontmatter
+\TitlePage[Hello, title]
+\chapter{Úvod}
+\mainmatter
+\chapter{První kapitola}
+\lipsum[1-3]
+
+\end{document}
