@@ -1,2 +1,48 @@
 \ProvidesPackage{pedfukthesis}
+
+% Use packages
+\RequirePackage{kvoptions}
+\RequirePackage{filecontents}
+\RequirePackage{ifpdf}
+% This fixes pdfx package error
+\RequirePackage[bookmarks,pdfencoding=auto]{hyperref}
+
+% Options declaration
+
+\SetupKeyvalOptions{
+  family=pedfukthesis,
+  prefix=pedfukthesis@
+}
+\DeclareStringOption{author}
+\DeclareStringOption{title}
+\DeclareStringOption{subject}
+\DeclareStringOption{keywords}
+\DeclareStringOption[Univerzita Karlova]{university}
+\DeclareStringOption[Pedagogická fakulta]{faculty}
+
+\ProcessKeyvalOptions*
+
+% PDF/A compatibility
+
+% Load PDF/A support only in the PDF mode
+\ifpdf
+
+  % write xmpdata
+  \newwrite\xmpfile
+  \openout\xmpfile=\jobname.xmpdata
+  \write\xmpfile{\noexpand\Author{\pedfukthesis@author}}
+  \write\xmpfile{\noexpand\Title{\pedfukthesis@title}}
+  \write\xmpfile{\noexpand\Keywords{\pedfukthesis@keywords}}
+  \write\xmpfile{\noexpand\Subject{\pedfukthesis@subject}}
+  \write\xmpfile{\noexpand\Publisher{\pedfukthesis@university, \pedfukthesis@faculty}}
+  \closeout\xmpfile
+  
+  % fix for pdfx and missing \pdfminorversion in LuaTeX
+  \ifdefined\pdfminorversion\else
+    \newcount\pdfminorversion
+    \pdfminorversion=\pdfvariable minorversion
+  \fi
+  \RequirePackage[a-2u]{pdfx}
+\fi
+
 \endinput
