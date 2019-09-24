@@ -5,6 +5,7 @@
 \RequirePackage{filecontents}
 \RequirePackage{ifpdf}
 \RequirePackage{etoolbox}
+\RequirePackage{setspace}
 % This fixes pdfx package error
 \RequirePackage[bookmarks,pdfencoding=auto]{hyperref}
 
@@ -17,8 +18,10 @@
 
 \DeclareStringOption{author}
 \DeclareStringOption{title}
+\DeclareStringOption{titletrans}
 \DeclareStringOption{subject}
 \DeclareStringOption{keywords}
+\DeclareStringOption{supervisor}
 \DeclareStringOption[Univerzita Karlova]{university}
 \DeclareStringOption[Pedagogická fakulta]{faculty}
 \DeclareStringOption{department}
@@ -41,38 +44,6 @@
 \DeclareBoolOption[true]{style}
 
 \ProcessKeyvalOptions*
-
-% Declare thesis type
-
-% It is necessary to define two forms of the text
-% One for the title page, second for the declaration
-
-% Default text used in the declaration
-\def\pedfukthesis@typedeclaration{práce}
-
-\if\pedfukthesis@type\relax
-
-  \ifpedfukthesis@master
-  \def\pedfukthesis@type{Diplomová práce}
-  \def\pedfukthesis@typedeclaration{diplomové práce}
-  \fi
-  
-  \ifpedfukthesis@bachelor
-  \def\pedfukthesis@type{Bakalářská práce}
-  \def\pedfukthesis@typedeclaration{bakalářské práce}
-  \fi
-  
-  \ifpedfukthesis@rigo
-  \def\pedfukthesis@type{Rigorózní práce}
-  \def\pedfukthesis@typedeclaration{rigorózní práce}
-  \fi
-
-  \ifpedfukthesis@phd
-  \def\pedfukthesis@type{Disertační práce}
-  \def\pedfukthesis@typedeclaration{disertační práce}
-  \fi
-
-\fi
 
 
 
@@ -104,6 +75,8 @@
 \ifpedfukthesis@style
   % ugly parskip between is required. why, oh why?!!!
   \parskip=0.5em
+  % and huge line spacing :(
+  \onehalfspacing
   % prevent \mainmatter from page resetting
   % source: https://tex.stackexchange.com/a/380819/2891
   \renewcommand\frontmatter{%
@@ -142,19 +115,74 @@
   \csgdef{pedfukthesis@finish@#1}{#3}%
 }
 
-%
+% declare and retrieve strings
+\newcommand\pedfukthesis@setstring[2]{\csgdef{pedfukthesis@string@#1}{#2}}
+\newcommand\pedfukthesis@getstring[1]{\csuse{pedfukthesis@string@#1}}
+% user command to set strings
+\newcommand\PedfSetString[2]{\pedfukthesis@setstring{#1}{#2}}
+
+% Declare thesis type
+
+% It is necessary to define two forms of the text
+% One for the title page, second for the declaration
+
+% Default text used in the declaration
+\PedfSetString{typedeclaration}{práce}
+
+\if\pedfukthesis@type\relax
+
+  \ifpedfukthesis@master
+    \PedfSetString{type}{Diplomová práce}
+    \PedfSetString{typedeclaration}{diplomové práce}
+  \fi
+  
+  \ifpedfukthesis@bachelor
+    \PedfSetString{type}{Bakalářská práce}
+    \PedfSetString{typedeclaration}{bakalářské práce}
+  \fi
+  
+  \ifpedfukthesis@rigo
+    \PedfSetString{type}{Rigorózní práce}
+    \PedfSetString{typedeclaration}{rigorózní práce}
+  \fi
+
+  \ifpedfukthesis@phd
+    \PedfSetString{type}{Disertační práce}
+    \PedfSetString{typedeclaration}{disertační práce}
+  \fi
+  \let\pedfukthesis@type\pedfukthesis@string@type
+
+\fi
+
+\pedfukthesis@setstring{supervisor}{Vedoucí práce}
+\def\pedfukthesis@string@programme{Studijní program}
+\def\pedfukthesis@string@field{Studijní obor}
+
+% the optional argument should contain Czech title if the title is in another language
+% titletrans should be always English
 \newcommand\TitlePage[1][]{%
   \clearpage%
   \thispagestyle{empty}%
   \bgroup%
-  % \parindent=0pt%
   \pedfukthesis@printfieldblock{university}%
   \pedfukthesis@printfieldblock{faculty}%
   \pedfukthesis@printfieldblock{department}%
   \pedfukthesis@printfieldblock{type}%
-  \pedfukthesis@printfieldblock{title}%
-  \pedfukthesis@printfieldblock{author}%
-  \pedfukthesis@printfieldblock{keywords}%
+  \pedfukthesis@printfieldblock{title}% title in the original langauge or in Czech, if the original is English
+  \pedfukthesis@printfieldblock{titletrans}% English translation
+  \ifx\relax#1\relax\else%
+    \def\pedfukthesis@titleczech{#1}%
+    \pedfukthesis@printfieldblock{titleczech}%
+  \fi%
+  \pedfukthesis@printfieldblock{author}%%
+  \vfill%
+  \noindent\begin{tabular}{@{}p{0.3\textwidth}p{0.7\textwidth}}%
+    \pedfukthesis@string@supervisor:~& \pedfukthesis@printfield{supervisor}\\%
+    \pedfukthesis@string@programme:~& \pedfukthesis@printfield{programme}\\%
+    \pedfukthesis@string@field:~& \pedfukthesis@printfield{field}%
+  \end{tabular}%
+  \vfill%
+  \pedfukthesis@printfieldblock{year}%
   \egroup%
   \cleardoublepage%
 }
@@ -167,7 +195,9 @@
 \PedfDeclareFieldFormat{department}{\centering}{\par\vfill}
 \PedfDeclareFieldFormat{type}{\centering\large}{\par\vfill}
 \PedfDeclareFieldFormat{title}{\centering\large}{\par}
-\PedfDeclareFieldFormat{author}{}{}
+\PedfDeclareFieldFormat{titletrans}{\centering\large}{\par}
+\PedfDeclareFieldFormat{titleczech}{\centering\large}{\par}
+\PedfDeclareFieldFormat{author}{\centering}{\par}
 \PedfDeclareFieldFormat{keywords}{}{}
 
 \endinput
