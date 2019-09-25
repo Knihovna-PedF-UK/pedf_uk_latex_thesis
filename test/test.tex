@@ -1,4 +1,4 @@
-\documentclass[oneside]{book}
+\documentclass[oneside,a4paper,12pt]{book}
 \usepackage{iftex}
 % use fontenc and inputenc only with pdflatex
 \ifPDFTeX
@@ -12,7 +12,7 @@
   author={Michal Hoftich},
   title={Ukázkový dokument},
   titletrans={Sample document},
-  keywords={test,validation},
+  keywords={ukázka, test, validace},
   supervisor={PhDr. Jiří Vomáčka, Ph.D.},
   department={Katedra pedagogiky},
   programme={Specializace v pedagogice},
@@ -24,9 +24,30 @@
 \begin{document}
 \frontmatter
 \TitlePage[Hello, title]
+
+\begin{abstract}
+Abstrakt v rozsahu 200 slov je stručný výtah práce. Slouží především jako pomoc
+čtenáři rychle se zorientovat v dané práci, obsahuje stručnou charakteristiku
+práce, její cíle a použité metody. Abstrakt obsahuje také shrnutí výsledků
+práce.
+\SavedKeywords
+\end{abstract}
+
+\begin{abstract}[Abstract]
+An abstract of 200 words is a brief summary of the work. It serves primarily  
+a reader to quickly orientate in the work, contains a brief description of the
+work, its objectives and methods used. The abstract also contains a summary of
+the results of the work.
+\Keywords[Keywords]{test, validation}
+\end{abstract}
+
+\tableofcontents
 \chapter{Úvod}
 \mainmatter
 \chapter{První kapitola}
+\section{Sekce}
+\subsection{Podsekce}
+\subsubsection{Další úroveň}
 \lipsum[1-3]
 
 \end{document}
