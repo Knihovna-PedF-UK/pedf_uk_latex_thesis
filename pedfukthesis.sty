@@ -6,8 +6,12 @@
 \RequirePackage{ifpdf}
 \RequirePackage{etoolbox}
 \RequirePackage{setspace}
+\RequirePackage{sectsty}%
+\RequirePackage{geometry}
 % This fixes pdfx package error
 \RequirePackage[bookmarks,pdfencoding=auto]{hyperref}
+
+
 
 % Options declaration
 
@@ -21,6 +25,7 @@
 \DeclareStringOption{titletrans}
 \DeclareStringOption{subject}
 \DeclareStringOption{keywords}
+\DeclareStringOption{keywordstrans}
 \DeclareStringOption{supervisor}
 \DeclareStringOption[Univerzita Karlova]{university}
 \DeclareStringOption[Pedagogická fakulta]{faculty}
@@ -70,25 +75,68 @@
   \RequirePackage[a-2u]{pdfx}
 \fi
 
+% environment for easier layout settings
+\newcommand\pedfukthesis@layout@execute[1]{\csuse{pedfukthesis@layout@#1}}
+\newenvironment{layoutsettings}{%
+  \makeatletter%
+  \let\@\pedfukthesis@layout@execute%
+}{\makeatother}
 
-% set default style
-\ifpedfukthesis@style
+% styling commands
+% set paragraph skips and line spacing
+% the optional argument contains 
+\newcommand\pedfukthesis@layout@spacing[1][0.5em]{%
   % ugly parskip between is required. why, oh why?!!!
-  \parskip=0.5em
+  \global\parskip=#1
   % and huge line spacing :(
-  \onehalfspacing
-  % prevent \mainmatter from page resetting
-  % source: https://tex.stackexchange.com/a/380819/2891
-  \renewcommand\frontmatter{%
+  \global\onehalfspacing
+}
+
+
+% prevent \mainmatter from page counter resetting
+% source: https://tex.stackexchange.com/a/380819/2891
+\newcommand\pedfukthesis@layout@pagecounter{%
+  \gdef\frontmatter{%
     \cleardoublepage
     \@mainmatterfalse
     %\pagenumbering{roman}% Don't reset
   }
-  \renewcommand\mainmatter{%
+  \gdef\mainmatter{%
     \cleardoublepage
     \@mainmattertrue
     %\pagenumbering{arabic}% Don't reset
   }
+}
+
+\newcommand\pedfukthesis@layout@sectionsize{%
+  \chapterfont{\large}%
+  \sectionfont{\large}%
+  \subsectionfont{\large}
+}
+
+\newcommand\pedfukthesis@layout@page{%
+  % page dimensions
+  % these are rather ugly, use custom dimensions if possible
+  % the inner margin is larger because of the page binding 
+  \geometry{top=20mm,inner=30mm, outer=20mm, bottom=30mm}
+}
+
+% set the default style?
+\ifpedfukthesis@style
+  % the style is based on the faculty directions
+  % http://wwwmod.pedf.cuni.cz/udeska/files/opatreni_dekana/opad_c._372017_o_podrobnostech_pro_zaverecne_prace.pdf
+  \begin{layoutsettings}
+    \@{spacing}
+    % continuous page counter between \frontmatter and \mainmatter
+    \@{pagecounter}
+    % set default font sizes for chapters and sections
+    \@{sectionsize}
+    % page dimensions
+    \@{page}
+  \end{layoutsettings}
+  % the page style must be set outside of a group, it doesn't work in the layoutsettings environment
+  \global\pagestyle{plain}
+
 \fi
 
 
@@ -105,7 +153,7 @@
 
 
 % print field on a separate line
-\newcommand\pedfukthesis@printfieldblock[1]{\noindent\pedfukthesis@printfield{#1}\par}
+\newcommand\pedfukthesis@printfieldblock[1]{\par\noindent\pedfukthesis@printfield{#1}\par}
 
 % environment for simpler retrivment of the fields
 \newenvironment{usefields}{
@@ -173,6 +221,20 @@
 \PedfSetString{programme}{Studijní program}
 \PedfSetString{field}{Studijní obor}
 
+\PedfSetString{originality}{Odevzdáním této diplomové práce na téma 
+\pedfukthesis@printfield{statementtitle}\space
+potvrzuji, že jsem ji \pedfukthesis@string@workedout\ pod vedením vedoucího práce samostatně za
+použití v práci uvedených pramenů a literatury. Dále potvrzuji, že tato práce
+nebyla využita k získání jiného nebo stejného titulu.}
+
+\PedfSetString{workedout}{odevzdal}
+
+\PedfSetString{abstract}{Abstrakt}
+\PedfSetString{keywords}{Klíčová slova}
+
+
+% 
+
 % the optional argument should contain Czech title if the title is in another language
 % titletrans should be always English
 \newcommand\TitlePage[1][]{%
@@ -202,13 +264,6 @@
   \cleardoublepage%
 }
 
-\PedfSetString{originality}{Odevzdáním této diplomové práce na téma 
-\pedfukthesis@printfield{statementtitle}\space
-potvrzuji, že jsem ji \pedfukthesis@string@workedout\ pod vedením vedoucího práce samostatně za
-použití v práci uvedených pramenů a literatury. Dále potvrzuji, že tato práce
-nebyla využita k získání jiného nebo stejného titulu.}
-
-\PedfSetString{workedout}{odevzdal}
 
 % the parameter should contain date and place of thesis completion
 \newcommand\OriginalityStatement[1]{%
@@ -224,6 +279,35 @@ nebyla využita k získání jiného nebo stejného titulu.}
   \cleardoublepage%
 }
 
+% The abstract environment
+% Optional argument may contain the abstract title
+\newenvironment{abstract}[1][]{%
+  \cleardoublepage%
+  \ifx\relax#1\relax\let\pedfukthesis@abstracttitle\pedfukthesis@string@abstract\else\def\pedfukthesis@abstracttitle{#1}\fi%
+  \pedfukthesis@printfieldblock{abstracttitle}%
+  \noindent\ignorespaces%
+}{\cleardoublepage}
+
+
+\newcommand\Keywords[2][]{%
+  \bgroup%
+  \ifx\relax#1\relax\let\pedfukthesis@keywordstitle\pedfukthesis@string@keywords\else\def\pedfukthesis@keywordstitle{#1}\fi%
+  % redefine the keywords only locally, in order to preserve the original contents
+  \def\pedfukthesis@keywords{#2}%
+  \begin{usefields}%
+    \@{keywordstitle}%
+    \@{keywords}%
+  \end{usefields}%
+  \egroup%
+}
+
+% varian of \Keywords that uses keywords defined in the package declaration
+\newcommand\SavedKeywords[1][]{%
+  \edef\@temp{\pedfukthesis@keywords}%
+  \Keywords[#1]{\@temp}%
+}
+
+
 % Default formatting
 
 % \centering needs \par in the current group to take effect
@@ -238,7 +322,9 @@ nebyla využita k získání jiného nebo stejného titulu.}
 \@{author}{\par\bigskip\centering}{\par}
 \@{statementtitle}{\itshape}{}
 \@{originalitystatement}{\null\vfill\noindent}{\par\vskip\baselineskip}
+\@{abstracttitle}{\bfseries}{}
 \@{keywords}{}{}
+\@{keywordstitle}{\par\bigskip\par\noindent\bfseries}{}
 \end{setfieldformats}
 
 \endinput
