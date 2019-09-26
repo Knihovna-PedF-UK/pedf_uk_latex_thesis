@@ -155,11 +155,13 @@
   \else%
     \ifdefined\setsecheadstyle
     % Memoir support
-    % It doesn't seem to change section sizes
-    \chapterstyle{section}
-    \setsecheadstyle{\Huge\bfseries}
-    \setsubsecheadstyle{\large\bfseries}
+    \gdef\chapnumfont{\large\bfseries}
+    \gdef\chapnamefont{\large\bfseries}
+    \gdef\chaptitlefont{\large\bfseries}
+    \gdef\secheadstyle{\large\bfseries}
+    \gdef\subsecheadstyle{\large\bfseries}
     \else
+      % default classes
       \chapterfont{\large}%
       \sectionfont{\large}%
       \subsectionfont{\large}
