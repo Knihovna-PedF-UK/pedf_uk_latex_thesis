@@ -8,8 +8,6 @@
 \RequirePackage{setspace}
 \RequirePackage{sectsty}%
 \RequirePackage{geometry}
-% This fixes pdfx package error
-\RequirePackage[bookmarks,pdfencoding=auto]{hyperref}
 
 
 
@@ -50,6 +48,22 @@
 
 \ProcessKeyvalOptions*
 
+% copy contents of the first command to the second command when the second command is empty
+\newcommand\pedfukthesis@misc@saveinfo[2]{%
+\ifdefined#1\relax%
+  % save contents of the \title command in our internal title
+  % command, but only if it wasn't included explicitly
+  \ifx#2\@empty%
+    \global\let#2#1%
+  \fi%
+\fi%
+}
+
+% Add support for the \title and \author commands
+\AtBeginDocument{%
+  \pedfukthesis@misc@saveinfo\@title\pedfukthesis@title%
+  \pedfukthesis@misc@saveinfo\@author\pedfukthesis@author%
+}
 
 
 % PDF/A compatibility
@@ -57,6 +71,7 @@
 % Load PDF/A support only in the PDF mode
 \ifpdf
 
+\AtBeginDocument{%
   % write xmpdata
   \newwrite\xmpfile
   \openout\xmpfile=\jobname.xmpdata
@@ -66,6 +81,7 @@
   \write\xmpfile{\noexpand\Subject{\pedfukthesis@subject}}
   \write\xmpfile{\noexpand\Publisher{\pedfukthesis@university, \pedfukthesis@faculty}}
   \closeout\xmpfile
+}
   
   % fix for pdfx and missing \pdfminorversion in LuaTeX
   \ifdefined\pdfminorversion\else
@@ -73,6 +89,11 @@
     \pdfminorversion=\pdfvariable minorversion
   \fi
   \RequirePackage[a-2u]{pdfx}
+  % try the tagged PDF support
+  \IfFileExists{tagpdf.sty}{
+    \RequirePackage{tagpdf}
+    \tagpdfsetup{activate-all}
+  }{}
 \fi
 
 % environment for easier layout settings
@@ -109,9 +130,14 @@
 }
 
 \newcommand\pedfukthesis@layout@sectionsize{%
+  % use different methods for setting of the chapter size depending  on the used document class
+  % KOMAScript
+  \ifdefined\addtokomafont%
+  \else%
   \chapterfont{\large}%
   \sectionfont{\large}%
   \subsectionfont{\large}
+  \fi
 }
 
 \newcommand\pedfukthesis@layout@page{%
