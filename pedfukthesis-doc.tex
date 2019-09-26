@@ -1,19 +1,35 @@
 \documentclass{ltxdoc}
-\newcommand\pkgname{\texttt{Pedfukthesis}}
+\usepackage[czech]{babel}
+\usepackage{luavlna}
+\usepackage{hyperref}
+\usepackage{fontspec}
+\setmainfont{TeX Gyre Schola}
+\setmonofont[Scale=MatchLowercase]{Inconsolatazi4}
+\usepackage{microtype}
+\usepackage{hyperref}
+
+\newcommand\pkgname{\texttt{pedfukthesis}}
+\title{Balíček \pkgname}
+\author{Michal Hoftich}
+\date{Verze \version, \gitdate}
 \begin{document}
+
+\maketitle
+
+\tableofcontents
 
 \section{PDF/A}
 Balíček \pkgname\ má vestavěnou podporu pro formát \texttt{PDF/A-2u},
 vyžadovaný pro validaci závěrečné práce v SIS. Validitu souboru si můžete
 ověřit i před nahráním do SIS pomocí nástroje
-Verapdf\footnot{\url{https://verapdf.org/}}. SIS používá speciální validační
+Verapdf\footnote{\url{https://verapdf.org/}}. SIS používá speciální validační
 profil, který je možné získat ze stránek
 \textit{Návod pro uložení kvalifikační práce}\footnote{\url{https://cuni.cz/UK-7987.html}}.
 
 Validaci s profilem lze spusit pomocí příkazu
 
 \begin{verbatim}
-$ verapdf --profile UK-7987-version1-custom8.xml --format text nazevprace.pdf
+verapdf --profile UK-7987-version1-custom8.xml --format text nazevprace.pdf
 \end{verbatim}
 
 Pokud validace proběhla bez problémů, vypíše tento příkaz následující odpověď:
@@ -24,7 +40,7 @@ PASS nazevprace.pdf
 
 \subsection{Možné problémy při validaci}
 
-Balíček \texttt{Hyperref} může způsobit problémy s validitou PDF souboru. V některých případech
+Balíček \texttt{hyperref} může způsobit problémy s validitou PDF souboru. V některých případech
 pomůže nahrát ho až po nahrání \pkgname. Pokud problémy přetrvají, není možné
 jej použít ve verzi závěrečné práce určené pro odevzdání do SIS.
 
