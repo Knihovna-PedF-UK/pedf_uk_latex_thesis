@@ -5,8 +5,22 @@
 \RequirePackage{filecontents}
 \RequirePackage{ifpdf}
 \RequirePackage{etoolbox}
-\RequirePackage{setspace}
-\RequirePackage{sectsty}%
+
+% one half spacing support
+% \OnehalfSpacing is defined in Memoir
+\ifdefined\OnehalfSpacing
+  \let\onehalfspacing\OnehalfSpacing
+\else
+  \RequirePackage{setspace}
+\fi
+
+% don't load the sectsty package with KOMA Script
+\ifdefined\setkomafont\else
+  % also Memoir class
+  \ifdefined\secheadstyle\else
+    \RequirePackage{sectsty}%
+  \fi
+\fi
 \RequirePackage{geometry}
 
 
@@ -133,10 +147,23 @@
   % use different methods for setting of the chapter size depending  on the used document class
   % KOMAScript
   \ifdefined\addtokomafont%
+  \AtBeginDocument{%
+    \setkomafont{chapter}{\large}
+    \addtokomafont{section}{\large}
+    \addtokomafont{subsection}{\large}
+  }
   \else%
-  \chapterfont{\large}%
-  \sectionfont{\large}%
-  \subsectionfont{\large}
+    \ifdefined\setsecheadstyle
+    % Memoir support
+    % It doesn't seem to change section sizes
+    \chapterstyle{section}
+    \setsecheadstyle{\Huge\bfseries}
+    \setsubsecheadstyle{\large\bfseries}
+    \else
+      \chapterfont{\large}%
+      \sectionfont{\large}%
+      \subsectionfont{\large}
+    \fi
   \fi
 }
 
@@ -306,8 +333,12 @@ nebyla využita k získání jiného nebo stejného titulu.}
 }
 
 % The abstract environment
-% Optional argument may contain the abstract title
-\newenvironment{abstract}[1][]{%
+
+% detect if the environment already exists and either make new enviroment or redefine it
+\ifdefined\abstract\let\pedfukthesis@misc@def\renewenvironment\else\let\pedfukthesis@misc@def\newenvironment\fi
+
+% The optional argument may contain the abstract title
+\pedfukthesis@misc@def{abstract}[1][]{%
   \cleardoublepage%
   \ifx\relax#1\relax\let\pedfukthesis@abstracttitle\pedfukthesis@string@abstract\else\def\pedfukthesis@abstracttitle{#1}\fi%
   \pedfukthesis@printfieldblock{abstracttitle}%
