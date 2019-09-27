@@ -1,12 +1,13 @@
 \documentclass{ltxdoc}
 \usepackage[czech]{babel}
 \usepackage{luavlna}
-\usepackage{hyperref}
+\usepackage[bookmarks,pdfencoding=auto]{hyperref}
 \usepackage{fontspec}
 \setmainfont{TeX Gyre Schola}
 \setmonofont[Scale=MatchLowercase]{Inconsolatazi4}
 \usepackage{microtype}
 \usepackage{hyperref}
+\usepackage{minted}
 
 \newcommand\pkgname{\texttt{pedfukthesis}}
 \title{Balíček \pkgname}
@@ -16,13 +17,28 @@
 
 \maketitle
 
+\begin{abstract}
+\noindent Účelem balíčku \pkgname\ je zjednodušení tvorby závěrečných prací na
+Pedagogické fakultě Univerzity Karlovy. Poskytuje příkazy pro zobrazení
+požadovaných formálních údajů podle opatření děkana č.
+32/2017\footnote{\url{http://wwwmod.pedf.cuni.cz/udeska/files/opatreni_dekana/opad_c._372017_o_podrobnostech_pro_zaverecne_prace.pdf}},
+volitelně také nastavuje formátování dokumentu podle doporučení tohoto
+opatření.
+\end{abstract}
+
 \tableofcontents
 
 \section{Úvod}
 
+Základní struktura závěrečné práce je následující:
 
-\section{PDF/A}
-Balíček \pkgname\ má vestavěnou podporu pro formát \texttt{PDF/A-2u},
+\inputminted{latex}{example/basic.tex}
+
+\section{Nastavení}
+
+\section{Možné problémy}
+\subsection{PDF/A}
+Balíček \pkgname\ obsahuje vestavěnou podporu pro formát \texttt{PDF/A-2u},
 vyžadovaný pro validaci závěrečné práce v SIS. Validitu souboru si můžete
 ověřit i před nahráním do SIS pomocí nástroje
 Verapdf\footnote{\url{https://verapdf.org/}}. SIS používá speciální validační
@@ -35,7 +51,7 @@ Validaci s profilem lze spusit pomocí příkazu
 verapdf --profile UK-7987-version1-custom8.xml --format text nazevprace.pdf
 \end{verbatim}
 
-Pokud validace proběhla bez problémů, vypíše tento příkaz následující odpověď:
+Pokud proběhla bez problémů, vypíše tento příkaz následující odpověď:
 
 \begin{verbatim}
 PASS nazevprace.pdf

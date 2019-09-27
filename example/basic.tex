@@ -1,0 +1,39 @@
+\documentclass[oneside,a4paper,12pt]{book}
+\usepackage[czech]{babel}
+\usepackage[%
+  titletrans={Sample document},
+  keywords={ukázka, test, validace},
+  supervisor={Vedoucí práce},
+  department={Název katedry},
+  programme={Studijní program},
+  field={Studijní oboj}
+  subject={Krátký popis tématu práce},
+]{pedfukthesis}
+
+\author{Jméno Autora}
+\title{Název práce}
+
+\begin{document}
+\frontmatter
+\TitlePage
+\OriginalityStatement{V Praze dne 24. 9. 2019.}
+
+\begin{abstract}
+Abstrakt v češtině
+\SavedKeywords % klíčová slova nastavení
+\end{abstract}
+
+\begin{abstract}[Abstract]
+English abstract
+\Keywords[Keywords]{keywords in English}
+\end{abstract}
+
+\tableofcontents
+\chapter{Úvod}
+Text úvodu.
+
+\mainmatter
+\chapter{První kapitola}
+Text první kapitoly.
+
+\end{document}
